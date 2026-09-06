@@ -1,0 +1,699 @@
+{% extends "base.html" %}
+
+{% block title %}{{ agent_name }} — Advisory Dashboard{% endblock %}
+
+{% block content %}
+<h4 class="mb-3 text-success fw-bold">
+  <i class="bi bi-grid me-2"></i>Crop Advisory Dashboard
+</h4>
+
+<!-- ===== Tab navigation ===== -->
+<ul class="nav nav-tabs mb-3" id="dashTabs">
+  <li class="nav-item">
+    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#soilTab">
+      <i class="bi bi-layers me-1"></i>Soil
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#irrigationTab">
+      <i class="bi bi-droplet me-1"></i>Irrigation
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fertilizerTab">
+      <i class="bi bi-bag me-1"></i>Fertilizer
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#pestTab">
+      <i class="bi bi-bug me-1"></i>Pest &amp; Disease
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#weatherTab">
+      <i class="bi bi-cloud-sun me-1"></i>Weather
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#cropPlanTab">
+      <i class="bi bi-calendar3 me-1"></i>Crop Plan
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#schemesTab">
+      <i class="bi bi-bank me-1"></i>Schemes
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#costTab">
+      <i class="bi bi-currency-rupee me-1"></i>Cost
+    </button>
+  </li>
+  <li class="nav-item">
+    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#sustainTab">
+      <i class="bi bi-recycle me-1"></i>Sustainable
+    </button>
+  </li>
+</ul>
+
+<div class="tab-content" id="dashTabContent">
+
+  <!-- ============================================================ -->
+  <!--  SOIL ANALYSIS TAB                                            -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade show active" id="soilTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-warning-subtle fw-semibold">
+            <i class="bi bi-layers me-1 text-warning"></i> Soil Test Data
+          </div>
+          <div class="card-body">
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small">pH</label>
+                <input type="number" class="form-control form-control-sm" id="soilPh" min="0" max="14" step="0.1" placeholder="e.g. 6.5" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Nitrogen (kg/ha)</label>
+                <input type="number" class="form-control form-control-sm" id="soilN" placeholder="e.g. 180" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Phosphorus (kg/ha)</label>
+                <input type="number" class="form-control form-control-sm" id="soilP" placeholder="e.g. 12" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Potassium (kg/ha)</label>
+                <input type="number" class="form-control form-control-sm" id="soilK" placeholder="e.g. 145" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Organic Matter (%)</label>
+                <input type="number" class="form-control form-control-sm" id="soilOM" step="0.1" placeholder="e.g. 0.8" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Texture</label>
+                <select class="form-select form-select-sm" id="soilTexture">
+                  <option value="">Select…</option>
+                  <option>Sandy</option>
+                  <option>Loamy</option>
+                  <option>Clay</option>
+                  <option>Sandy Loam</option>
+                  <option>Clay Loam</option>
+                  <option>Black (Vertisol)</option>
+                  <option>Red Laterite</option>
+                  <option>Alluvial</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label small">Location</label>
+                <input type="text" class="form-control form-control-sm" id="soilLocation" placeholder="e.g. Nashik, Maharashtra" />
+              </div>
+              <div class="col-12">
+                <label class="form-label small">Current / Planned Crop</label>
+                <input type="text" class="form-control form-control-sm" id="soilCrop" placeholder="e.g. Wheat" />
+              </div>
+            </div>
+            <button class="btn btn-warning btn-sm w-100 mt-3" id="analyseSoilBtn">
+              <i class="bi bi-search me-1"></i> Analyse Soil
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-file-text me-1"></i> Soil Analysis Report
+          </div>
+          <div class="card-body result-panel" id="soilResult">
+            <p class="text-muted small">Fill in the soil test data and click Analyse Soil.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  IRRIGATION TAB                                               -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="irrigationTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-info-subtle fw-semibold">
+            <i class="bi bi-droplet me-1 text-info"></i> Irrigation Parameters
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Crop</label>
+              <input type="text" class="form-control form-control-sm" id="irrCrop" placeholder="e.g. Rice" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Growth Stage</label>
+              <select class="form-select form-select-sm" id="irrStage">
+                <option>Germination / Emergence</option>
+                <option>Vegetative</option>
+                <option>Tillering / Branching</option>
+                <option>Flowering / Pollination</option>
+                <option>Grain / Fruit Filling</option>
+                <option>Maturity / Pre-harvest</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Soil Type</label>
+              <select class="form-select form-select-sm" id="irrSoil">
+                <option>Sandy</option>
+                <option>Loamy</option>
+                <option>Clay</option>
+                <option>Black Cotton</option>
+                <option>Red Laterite</option>
+                <option>Alluvial</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Weather Condition</label>
+              <select class="form-select form-select-sm" id="irrWeather">
+                <option>Dry / Hot (no rain)</option>
+                <option>Mild with occasional rain</option>
+                <option>Humid with regular rain</option>
+                <option>Post-monsoon drying</option>
+                <option>Winter / Cool</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Farm Area (hectares)</label>
+              <input type="number" class="form-control form-control-sm" id="irrArea" min="0.1" step="0.1" placeholder="e.g. 2.5" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small">Irrigation Method</label>
+              <select class="form-select form-select-sm" id="irrMethod">
+                <option>Drip</option>
+                <option>Sprinkler</option>
+                <option>Flood / Surface</option>
+                <option>Furrow</option>
+                <option>Basin</option>
+                <option>Rain-fed</option>
+              </select>
+            </div>
+            <button class="btn btn-info btn-sm w-100" id="getIrrigationBtn">
+              <i class="bi bi-calendar-week me-1"></i> Get Schedule
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-calendar-check me-1"></i> Irrigation Schedule
+          </div>
+          <div class="card-body result-panel" id="irrigationResult">
+            <p class="text-muted small">Fill in irrigation parameters and click Get Schedule.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  FERTILIZER TAB                                               -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="fertilizerTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success-subtle fw-semibold">
+            <i class="bi bi-bag me-1 text-success"></i> Fertilizer Inputs
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Crop</label>
+              <input type="text" class="form-control form-control-sm" id="fertCrop" placeholder="e.g. Wheat" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Area (hectares)</label>
+              <input type="number" class="form-control form-control-sm" id="fertArea" min="0.1" step="0.1" placeholder="e.g. 1" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Growth Stage</label>
+              <select class="form-select form-select-sm" id="fertStage">
+                <option>Pre-sowing / Land preparation</option>
+                <option>Sowing / Transplanting</option>
+                <option>Early vegetative</option>
+                <option>Vegetative growth</option>
+                <option>Flowering</option>
+                <option>Grain / Fruit filling</option>
+              </select>
+            </div>
+            <p class="small text-muted fw-semibold mt-2 mb-1">Soil NPK Status:</p>
+            <div class="row g-1 mb-3">
+              <div class="col-4">
+                <label class="form-label small">N</label>
+                <select class="form-select form-select-sm" id="fertN">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">P</label>
+                <select class="form-select form-select-sm" id="fertP">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+              <div class="col-4">
+                <label class="form-label small">K</label>
+                <select class="form-select form-select-sm" id="fertK">
+                  <option>Low</option>
+                  <option selected>Medium</option>
+                  <option>High</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-success btn-sm w-100" id="getFertilizerBtn">
+              <i class="bi bi-list-check me-1"></i> Generate Plan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-clipboard2-data me-1"></i> Fertilizer Management Plan
+          </div>
+          <div class="card-body result-panel" id="fertilizerResult">
+            <p class="text-muted small">Fill in the fertilizer inputs and click Generate Plan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  PEST & DISEASE TAB                                           -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="pestTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-danger-subtle fw-semibold">
+            <i class="bi bi-bug me-1 text-danger"></i> Pest / Disease Details
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Crop</label>
+              <input type="text" class="form-control form-control-sm" id="pestCrop" placeholder="e.g. Rice" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Growth Stage</label>
+              <select class="form-select form-select-sm" id="pestStage">
+                <option>Seedling</option>
+                <option>Vegetative</option>
+                <option>Tillering</option>
+                <option>Flowering</option>
+                <option>Grain filling</option>
+                <option>Maturity</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Season</label>
+              <select class="form-select form-select-sm" id="pestSeason">
+                <option>Kharif</option>
+                <option>Rabi</option>
+                <option>Zaid / Summer</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Location / State</label>
+              <input type="text" class="form-control form-control-sm" id="pestLocation" placeholder="e.g. Punjab" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small">Observed Symptoms</label>
+              <textarea class="form-control form-control-sm" id="pestSymptoms" rows="4"
+                placeholder="Describe what you see: yellowing, spots, holes, wilting, insects…"></textarea>
+            </div>
+            <button class="btn btn-danger btn-sm w-100" id="getPestAdviceBtn">
+              <i class="bi bi-search-heart me-1"></i> Diagnose &amp; Advise
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-shield-check me-1"></i> IPM Recommendations
+          </div>
+          <div class="card-body result-panel" id="pestResult">
+            <p class="text-muted small">Enter symptom details and click Diagnose &amp; Advise.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  WEATHER ADVISORY TAB                                         -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="weatherTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-primary-subtle fw-semibold">
+            <i class="bi bi-cloud-sun me-1 text-primary"></i> Weather Data
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Crop</label>
+              <input type="text" class="form-control form-control-sm" id="wxCrop" placeholder="e.g. Cotton" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Growth Stage</label>
+              <select class="form-select form-select-sm" id="wxStage">
+                <option>Germination</option>
+                <option>Vegetative</option>
+                <option>Flowering</option>
+                <option>Boll / Fruit Development</option>
+                <option>Maturity</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Weather Condition</label>
+              <select class="form-select form-select-sm" id="wxCondition">
+                <option>Sunny / Clear</option>
+                <option>Partly Cloudy</option>
+                <option>Overcast</option>
+                <option>Light Rain</option>
+                <option>Heavy Rain / Storm</option>
+                <option>Fog / Mist</option>
+                <option>Extremely Hot</option>
+                <option>Cold Wave / Frost</option>
+              </select>
+            </div>
+            <div class="row g-2 mb-2">
+              <div class="col-6">
+                <label class="form-label small">Max Temp (°C)</label>
+                <input type="number" class="form-control form-control-sm" id="wxTempMax" placeholder="e.g. 38" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Min Temp (°C)</label>
+                <input type="number" class="form-control form-control-sm" id="wxTempMin" placeholder="e.g. 24" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Humidity (%)</label>
+                <input type="number" class="form-control form-control-sm" id="wxHumidity" min="0" max="100" placeholder="e.g. 70" />
+              </div>
+              <div class="col-6">
+                <label class="form-label small">Rainfall (mm)</label>
+                <input type="number" class="form-control form-control-sm" id="wxRainfall" placeholder="e.g. 15" />
+              </div>
+              <div class="col-12">
+                <label class="form-label small">Wind Speed (km/h)</label>
+                <input type="number" class="form-control form-control-sm" id="wxWind" placeholder="e.g. 12" />
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm w-100" id="getWeatherAdvBtn">
+              <i class="bi bi-cloud-check me-1"></i> Get Weather Advisory
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-lightning me-1"></i> Weather-Based Farming Advisory
+          </div>
+          <div class="card-body result-panel" id="weatherResult">
+            <p class="text-muted small">Enter weather data and click Get Weather Advisory.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  CROP PLAN TAB                                                -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="cropPlanTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success-subtle fw-semibold">
+            <i class="bi bi-calendar3 me-1 text-success"></i> Crop Plan Inputs
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Location / District</label>
+              <input type="text" class="form-control form-control-sm" id="cpLocation" placeholder="e.g. Vidarbha, Maharashtra" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Land Size (hectares)</label>
+              <input type="number" class="form-control form-control-sm" id="cpLand" min="0.1" step="0.1" placeholder="e.g. 3" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Soil Type</label>
+              <select class="form-select form-select-sm" id="cpSoil">
+                <option>Black Cotton (Vertisol)</option>
+                <option>Alluvial</option>
+                <option>Red Laterite</option>
+                <option>Sandy Loam</option>
+                <option>Clay Loam</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Water Availability</label>
+              <select class="form-select form-select-sm" id="cpWater">
+                <option>Canal / River Irrigation</option>
+                <option>Bore-well / Tube-well</option>
+                <option>Rain-fed only</option>
+                <option>Drip / Sprinkler system</option>
+                <option>Tank / Pond</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Season</label>
+              <select class="form-select form-select-sm" id="cpSeason">
+                <option>Kharif (Jun–Oct)</option>
+                <option>Rabi (Nov–Mar)</option>
+                <option>Zaid / Summer (Apr–Jun)</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Budget (₹)</label>
+              <input type="number" class="form-control form-control-sm" id="cpBudget" placeholder="e.g. 75000" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small">Goals</label>
+              <select class="form-select form-select-sm" id="cpGoals">
+                <option>Maximise yield</option>
+                <option>Maximise profit</option>
+                <option>Minimise risk</option>
+                <option>Transition to organic</option>
+                <option>Diversify income</option>
+                <option>Reduce water use</option>
+              </select>
+            </div>
+            <button class="btn btn-success btn-sm w-100" id="getCropPlanBtn">
+              <i class="bi bi-map me-1"></i> Generate Crop Plan
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-journal-check me-1"></i> Seasonal Crop Plan
+          </div>
+          <div class="card-body result-panel" id="cropPlanResult">
+            <p class="text-muted small">Fill in the crop plan inputs and click Generate Crop Plan.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  SCHEMES TAB                                                  -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="schemesTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-secondary-subtle fw-semibold">
+            <i class="bi bi-bank me-1"></i> Scheme Query
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">State</label>
+              <select class="form-select form-select-sm" id="schState">
+                <option>Andhra Pradesh</option><option>Assam</option>
+                <option>Bihar</option><option>Chhattisgarh</option>
+                <option>Gujarat</option><option>Haryana</option>
+                <option>Himachal Pradesh</option><option>Jharkhand</option>
+                <option>Karnataka</option><option>Kerala</option>
+                <option>Madhya Pradesh</option><option selected>Maharashtra</option>
+                <option>Manipur</option><option>Odisha</option>
+                <option>Punjab</option><option>Rajasthan</option>
+                <option>Tamil Nadu</option><option>Telangana</option>
+                <option>Uttar Pradesh</option><option>Uttarakhand</option>
+                <option>West Bengal</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Primary Crop</label>
+              <input type="text" class="form-control form-control-sm" id="schCrop" placeholder="e.g. Cotton" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Farmer Category</label>
+              <select class="form-select form-select-sm" id="schCategory">
+                <option>Marginal (&lt;1 ha)</option>
+                <option>Small (1–2 ha)</option>
+                <option>Semi-medium (2–4 ha)</option>
+                <option>Medium (4–10 ha)</option>
+                <option>Large (&gt;10 ha)</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small">Land Holding (hectares)</label>
+              <input type="number" class="form-control form-control-sm" id="schLand" min="0.1" step="0.1" placeholder="e.g. 1.5" />
+            </div>
+            <button class="btn btn-secondary btn-sm w-100" id="getSchemesBtn">
+              <i class="bi bi-search me-1"></i> Find Schemes
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-award me-1"></i> Applicable Government Schemes
+          </div>
+          <div class="card-body result-panel" id="schemesResult">
+            <p class="text-muted small">Enter your details and click Find Schemes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  COST ESTIMATION TAB                                          -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="costTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-warning-subtle fw-semibold">
+            <i class="bi bi-currency-rupee me-1 text-warning"></i> Cost Inputs
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Crop</label>
+              <input type="text" class="form-control form-control-sm" id="costCrop" placeholder="e.g. Sugarcane" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Area (hectares)</label>
+              <input type="number" class="form-control form-control-sm" id="costArea" step="0.1" placeholder="e.g. 2" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Expected Yield (quintals)</label>
+              <input type="number" class="form-control form-control-sm" id="costYield" placeholder="e.g. 600" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">MSP / Market Price (₹/qtl)</label>
+              <input type="number" class="form-control form-control-sm" id="costPrice" placeholder="e.g. 315" />
+            </div>
+            <p class="small text-muted fw-semibold mt-2 mb-1">Input Costs (₹):</p>
+            <div class="row g-1 mb-3">
+              <div class="col-6"><label class="form-label small">Seeds</label>
+                <input type="number" class="form-control form-control-sm" id="costSeeds" placeholder="0" /></div>
+              <div class="col-6"><label class="form-label small">Fertilizers</label>
+                <input type="number" class="form-control form-control-sm" id="costFert" placeholder="0" /></div>
+              <div class="col-6"><label class="form-label small">Pesticides</label>
+                <input type="number" class="form-control form-control-sm" id="costPest" placeholder="0" /></div>
+              <div class="col-6"><label class="form-label small">Labour</label>
+                <input type="number" class="form-control form-control-sm" id="costLabour" placeholder="0" /></div>
+              <div class="col-6"><label class="form-label small">Irrigation</label>
+                <input type="number" class="form-control form-control-sm" id="costIrrigation" placeholder="0" /></div>
+              <div class="col-6"><label class="form-label small">Machinery</label>
+                <input type="number" class="form-control form-control-sm" id="costMachinery" placeholder="0" /></div>
+              <div class="col-12"><label class="form-label small">Other</label>
+                <input type="number" class="form-control form-control-sm" id="costOther" placeholder="0" /></div>
+            </div>
+            <button class="btn btn-warning btn-sm w-100" id="getCostEstBtn">
+              <i class="bi bi-calculator me-1"></i> Estimate Costs
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-graph-up me-1"></i> Cost-Benefit Analysis
+          </div>
+          <div class="card-body result-panel" id="costResult">
+            <p class="text-muted small">Enter cost inputs and click Estimate Costs.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!--  SUSTAINABLE PRACTICES TAB                                    -->
+  <!-- ============================================================ -->
+  <div class="tab-pane fade" id="sustainTab">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card shadow-sm">
+          <div class="card-header bg-success-subtle fw-semibold">
+            <i class="bi bi-recycle me-1 text-success"></i> Sustainable Farming
+          </div>
+          <div class="card-body">
+            <div class="mb-2">
+              <label class="form-label small">Current Farming Type</label>
+              <select class="form-select form-select-sm" id="sustFarmType">
+                <option>Conventional (chemical-based)</option>
+                <option>Semi-organic</option>
+                <option>Organic</option>
+                <option>Natural farming (Zero Budget)</option>
+                <option>Mixed / Integrated</option>
+              </select>
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Primary Crop</label>
+              <input type="text" class="form-control form-control-sm" id="sustCrop" placeholder="e.g. Rice" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small">Location</label>
+              <input type="text" class="form-control form-control-sm" id="sustLocation" placeholder="e.g. Andhra Pradesh" />
+            </div>
+            <div class="mb-3">
+              <label class="form-label small">Current Challenges</label>
+              <textarea class="form-control form-control-sm" id="sustChallenges" rows="4"
+                placeholder="e.g. soil degradation, water scarcity, high input costs, pest resistance…"></textarea>
+            </div>
+            <button class="btn btn-success btn-sm w-100" id="getSustainBtn">
+              <i class="bi bi-leaf me-1"></i> Get Sustainable Tips
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card shadow-sm h-100">
+          <div class="card-header fw-semibold">
+            <i class="bi bi-flower1 me-1"></i> Sustainable Farming Recommendations
+          </div>
+          <div class="card-body result-panel" id="sustainResult">
+            <p class="text-muted small">Enter your farming details and click Get Sustainable Tips.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /tab-content -->
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

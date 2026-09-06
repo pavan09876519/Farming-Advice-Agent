@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block title %}{{ agent_name }} — Farm Profile{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+
+  <!-- ===== Left: Profile Form ===== -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header bg-success text-white fw-semibold d-flex justify-content-between">
+        <span><i class="bi bi-person-circle me-2"></i>Farmer Profile</span>
+        <div class="d-flex gap-2">
+          <button class="btn btn-light btn-sm" id="saveProfileBtn">
+            <i class="bi bi-floppy me-1"></i>Save
+          </button>
+          <button class="btn btn-outline-light btn-sm" id="clearProfileBtn">
+            <i class="bi bi-trash me-1"></i>Clear
+          </button>
+        </div>
+      </div>
+      <div class="card-body">
+
+        <div id="profileAlert" class="d-none"></div>
+
+        <!-- Basic Info -->
+        <h6 class="text-muted fw-semibold border-bottom pb-1 mb-3">
+          <i class="bi bi-person me-1"></i> Basic Information
+        </h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Full Name *</label>
+            <input type="text" class="form-control" id="pName" placeholder="e.g. Ramesh Patil" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Phone</label>
+            <input type="tel" class="form-control" id="pPhone" placeholder="e.g. 9876543210" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Village / Town</label>
+            <input type="text" class="form-control" id="pVillage" placeholder="e.g. Wardha" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">District</label>
+            <input type="text" class="form-control" id="pDistrict" placeholder="e.g. Wardha" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">State</label>
+            <select class="form-select" id="pState">
+              <option value="">Select state…</option>
+              <option>Andhra Pradesh</option><option>Assam</option>
+              <option>Bihar</option><option>Chhattisgarh</option>
+              <option>Gujarat</option><option>Haryana</option>
+              <option>Himachal Pradesh</option><option>Jharkhand</option>
+              <option>Karnataka</option><option>Kerala</option>
+              <option>Madhya Pradesh</option><option>Maharashtra</option>
+              <option>Manipur</option><option>Odisha</option>
+              <option>Punjab</option><option>Rajasthan</option>
+              <option>Tamil Nadu</option><option>Telangana</option>
+              <option>Uttar Pradesh</option><option>Uttarakhand</option>
+              <option>West Bengal</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Farming Experience (years)</label>
+            <input type="number" class="form-control" id="pExperience" min="0" placeholder="e.g. 15" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Preferred Language</label>
+            <select class="form-select" id="pLanguage">
+              <option>English</option>
+              <option>Hindi</option>
+              <option>Marathi</option>
+              <option>Telugu</option>
+              <option>Tamil</option>
+              <option>Kannada</option>
+              <option>Gujarati</option>
+              <option>Punjabi</option>
+              <option>Bengali</option>
+              <option>Odia</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Farmer Category</label>
+            <select class="form-select" id="pCategory">
+              <option>Marginal (&lt;1 ha)</option>
+              <option>Small (1–2 ha)</option>
+              <option>Semi-medium (2–4 ha)</option>
+              <option>Medium (4–10 ha)</option>
+              <option>Large (&gt;10 ha)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Farm Details -->
+        <h6 class="text-muted fw-semibold border-bottom pb-1 mb-3">
+          <i class="bi bi-geo-alt me-1"></i> Farm Details
+        </h6>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Total Land Size (hectares)</label>
+            <input type="number" class="form-control" id="pLandSize" min="0.1" step="0.1" placeholder="e.g. 2.5" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Primary Soil Type</label>
+            <select class="form-select" id="pSoilType">
+              <option value="">Select…</option>
+              <option>Alluvial</option>
+              <option>Black Cotton (Vertisol)</option>
+              <option>Red Laterite</option>
+              <option>Sandy Loam</option>
+              <option>Clay</option>
+              <option>Clay Loam</option>
+              <option>Sandy</option>
+              <option>Peaty / Marshy</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Primary Irrigation Method</label>
+            <select class="form-select" id="pIrrigationType">
+              <option value="">Select…</option>
+              <option>Canal / River</option>
+              <option>Bore-well / Tube-well</option>
+              <option>Drip Irrigation</option>
+              <option>Sprinkler</option>
+              <option>Rain-fed (no irrigation)</option>
+              <option>Tank / Pond</option>
+              <option>Mixed</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Farming Type</label>
+            <select class="form-select" id="pFarmingType">
+              <option>Conventional</option>
+              <option>Semi-organic</option>
+              <option>Organic</option>
+              <option>Natural (Zero Budget)</option>
+              <option>Integrated</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Current / Planned Crops</label>
+            <input type="text" class="form-control" id="pCrops"
+              placeholder="Enter crops separated by commas, e.g. Cotton, Soybean, Tur" />
+          </div>
+        </div>
+
+        <!-- Farm Plots -->
+        <h6 class="text-muted fw-semibold border-bottom pb-1 mb-2">
+          <i class="bi bi-map me-1"></i> Farm Plots
+          <button class="btn btn-outline-success btn-sm ms-2" id="addPlotBtn" type="button">
+            <i class="bi bi-plus me-1"></i>Add Plot
+          </button>
+        </h6>
+        <div id="farmPlots" class="mb-4">
+          <!-- Plots added dynamically -->
+        </div>
+
+        <!-- Family / Team Members -->
+        <h6 class="text-muted fw-semibold border-bottom pb-1 mb-2">
+          <i class="bi bi-people me-1"></i> Family / Farm Team
+          <button class="btn btn-outline-success btn-sm ms-2" id="addMemberBtn" type="button">
+            <i class="bi bi-plus me-1"></i>Add Member
+          </button>
+        </h6>
+        <div id="familyMembers" class="mb-4">
+          <!-- Members added dynamically -->
+        </div>
+
+        <!-- Goals & Notes -->
+        <h6 class="text-muted fw-semibold border-bottom pb-1 mb-3">
+          <i class="bi bi-chat-quote me-1"></i> Goals & Notes
+        </h6>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Primary Farming Goal</label>
+            <select class="form-select" id="pGoal">
+              <option>Maximise yield</option>
+              <option>Maximise profit</option>
+              <option>Risk reduction / diversification</option>
+              <option>Transition to organic</option>
+              <option>Water conservation</option>
+              <option>Reduce input costs</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold">Annual Budget (₹)</label>
+            <input type="number" class="form-control" id="pBudget" placeholder="e.g. 100000" />
+          </div>
+          <div class="col-12">
+            <label class="form-label small fw-semibold">Additional Notes</label>
+            <textarea class="form-control" id="pNotes" rows="3"
+              placeholder="Any other information that helps give better advice…"></textarea>
+          </div>
+        </div>
+
+        <button class="btn btn-success w-100" id="saveProfileBtn2">
+          <i class="bi bi-floppy me-1"></i> Save Profile
+        </button>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Right: Profile Summary & Help ===== -->
+  <div class="col-lg-5">
+
+    <!-- Profile Summary Card -->
+    <div class="card shadow-sm mb-3">
+      <div class="card-header fw-semibold bg-light">
+        <i class="bi bi-card-text me-1"></i> Profile Summary
+      </div>
+      <div class="card-body" id="profileSummary">
+        <p class="text-muted small">Save a profile to see your summary here.</p>
+      </div>
+    </div>
+
+    <!-- Multi-farm Info -->
+    <div class="card shadow-sm mb-3 border-success">
+      <div class="card-header fw-semibold bg-success-subtle text-success">
+        <i class="bi bi-diagram-3 me-1"></i> Multi-Farm &amp; Family Support
+      </div>
+      <div class="card-body small">
+        <p class="mb-2">
+          <strong>{{ agent_name }}</strong> supports families and groups managing
+          multiple farm plots with different crops, soil types, and conditions.
+        </p>
+        <ul class="mb-0">
+          <li>Add multiple plots with different crops and soil types</li>
+          <li>Add family / team members with their roles</li>
+          <li>The AI tailors advice for each plot separately</li>
+          <li>Labour and input resources are coordinated across plots</li>
+          <li>Perfect for joint family farms or FPO members</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Helpline -->
+    <div class="card shadow-sm border-warning">
+      <div class="card-header fw-semibold bg-warning-subtle">
+        <i class="bi bi-telephone me-1"></i> Farmer Helplines
+      </div>
+      <div class="card-body small">
+        <table class="table table-sm table-borderless mb-0">
+          <tr><td class="fw-semibold">Kisan Call Centre</td><td>1800-180-1551</td></tr>
+          <tr><td class="fw-semibold">PM-KISAN</td><td>155261 / 011-24300606</td></tr>
+          <tr><td class="fw-semibold">Crop Insurance</td><td>1800-200-7710</td></tr>
+          <tr><td class="fw-semibold">Soil Health Card</td><td>soilhealth.dac.gov.in</td></tr>
+          <tr><td class="fw-semibold">eNAM Market</td><td>enam.gov.in</td></tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /row -->
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

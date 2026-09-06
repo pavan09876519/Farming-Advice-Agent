@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ agent_name }} — Smart Farming Chat{% endblock %}
+
+{% block content %}
+<div class="row g-3" style="height: calc(100vh - 130px);">
+
+  <!-- ===== Left: Quick Actions ===== -->
+  <div class="col-lg-3 d-flex flex-column gap-2">
+
+    <div class="card shadow-sm h-100">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-lightning-charge me-1"></i> Quick Actions
+      </div>
+      <div class="card-body p-2 overflow-auto">
+
+        <p class="small text-muted px-1 mb-2">Ask about any farming topic or tap a quick prompt:</p>
+
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="What crops should I sow this Kharif season in Maharashtra?">
+            <i class="bi bi-seedling me-1"></i> Kharif Crop Suggestions
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="How much water does rice need during the tillering stage?">
+            <i class="bi bi-droplet me-1"></i> Rice Irrigation Guide
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="My wheat leaves are turning yellow. What could be wrong?">
+            <i class="bi bi-bug me-1"></i> Diagnose Yellowing Wheat
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="What fertilizers should I use for cotton at the boll formation stage?">
+            <i class="bi bi-bag me-1"></i> Cotton Fertilizer Plan
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="Tell me about PM-KISAN scheme and how to apply.">
+            <i class="bi bi-bank me-1"></i> PM-KISAN Scheme Info
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="How to improve soil organic matter in my sandy loam field?">
+            <i class="bi bi-layers me-1"></i> Improve Soil Health
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="What is drip irrigation and when is it beneficial?">
+            <i class="bi bi-moisture me-1"></i> Drip Irrigation Guide
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="Give me a crop rotation plan to improve soil and reduce pests.">
+            <i class="bi bi-arrow-repeat me-1"></i> Crop Rotation Plan
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="How can I reduce input costs while maintaining good yield?">
+            <i class="bi bi-currency-rupee me-1"></i> Cost Reduction Tips
+          </button>
+          <button class="btn btn-outline-success btn-sm text-start quick-prompt"
+            data-prompt="What are the best organic farming practices for small farmers?">
+            <i class="bi bi-recycle me-1"></i> Organic Farming Tips
+          </button>
+        </div>
+
+        <hr class="my-2" />
+        <div class="d-grid gap-2">
+          <a href="/dashboard" class="btn btn-success btn-sm">
+            <i class="bi bi-grid me-1"></i> Open Advisory Dashboard
+          </a>
+          <a href="/profile" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-person-circle me-1"></i> Manage Farm Profile
+          </a>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /left col -->
+
+  <!-- ===== Right: Chatbot ===== -->
+  <div class="col-lg-9 d-flex flex-column">
+
+    <div class="card shadow-sm flex-grow-1 d-flex flex-column" style="min-height: 0;">
+
+      <!-- Chat header -->
+      <div class="card-header bg-white d-flex align-items-center justify-content-between border-bottom">
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar-circle bg-success text-white">
+            <i class="bi bi-robot fs-5"></i>
+          </div>
+          <div>
+            <div class="fw-semibold text-success">{{ agent_name }}</div>
+            <div class="small text-muted" id="statusText">Ready to help</div>
+          </div>
+        </div>
+        <div class="d-flex gap-2">
+          <span class="badge bg-success-subtle text-success border border-success-subtle" id="modelBadge">
+            IBM Granite
+          </span>
+          <button class="btn btn-outline-secondary btn-sm" id="resetChatBtn" title="Clear conversation">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Chat messages -->
+      <div class="card-body flex-grow-1 overflow-auto p-3" id="chatMessages" style="min-height: 0;">
+
+        <!-- Welcome message -->
+        <div class="d-flex gap-2 mb-3 chat-message" id="welcomeMsg">
+          <div class="avatar-circle bg-success text-white flex-shrink-0" style="width:36px;height:36px;">
+            <i class="bi bi-robot"></i>
+          </div>
+          <div class="chat-bubble assistant-bubble">
+            <p class="mb-1 fw-semibold text-success">Namaste! 🌾 I'm {{ agent_name }}</p>
+            <p class="mb-1">Your AI-powered farming advisor, here to help with:</p>
+            <ul class="mb-1 small">
+              <li>Crop selection &amp; planning (Kharif, Rabi, Zaid)</li>
+              <li>Soil health, fertilizer &amp; irrigation advice</li>
+              <li>Pest &amp; disease identification and management</li>
+              <li>Weather-based farming guidance</li>
+              <li>Government schemes &amp; market information</li>
+              <li>Cost estimates &amp; sustainable farming tips</li>
+            </ul>
+            <p class="mb-0 small text-muted">
+              Type your question below or tap a Quick Action on the left.
+              You can also set up your <a href="/profile">Farm Profile</a>
+              for personalised advice.
+            </p>
+          </div>
+        </div>
+
+      </div><!-- /chat messages -->
+
+      <!-- Typing indicator -->
+      <div class="px-3 py-1 d-none" id="typingIndicator">
+        <div class="d-flex align-items-center gap-2 text-muted small">
+          <div class="typing-dots"><span></span><span></span><span></span></div>
+          {{ agent_name }} is thinking…
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="card-footer bg-white border-top p-2">
+        <form id="chatForm" class="d-flex gap-2">
+          <textarea
+            id="chatInput"
+            class="form-control"
+            placeholder="Ask about crops, irrigation, pests, soil, schemes…"
+            rows="2"
+            style="resize:none;"
+          ></textarea>
+          <div class="d-flex flex-column gap-1">
+            <button type="submit" class="btn btn-success px-3" id="sendBtn">
+              <i class="bi bi-send-fill"></i>
+            </button>
+            <button type="button" class="btn btn-outline-secondary px-3" id="voiceBtn" title="Voice input">
+              <i class="bi bi-mic"></i>
+            </button>
+          </div>
+        </form>
+        <div class="d-flex justify-content-between align-items-center mt-1 px-1">
+          <span class="small text-muted">Press Enter to send, Shift+Enter for new line</span>
+          <span class="small text-muted" id="charCount">0 / 2000</span>
+        </div>
+      </div>
+
+    </div><!-- /card -->
+  </div><!-- /right col -->
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{{ agent_name }} — Agent Settings{% endblock %}
+
+{% block content %}
+<div class="row g-3">
+
+  <div class="col-12">
+    <div class="alert alert-info d-flex gap-2 align-items-start">
+      <i class="bi bi-info-circle-fill fs-5 flex-shrink-0 mt-1"></i>
+      <div>
+        <strong>Editable Agent Instructions</strong> — The sections below define how
+        <strong>{{ agent_name }}</strong> thinks, responds, and behaves.
+        To permanently change the AI's behavior, edit
+        <code>modules/agent_instructions.py</code> and restart the server.
+        This page shows the current live settings.
+      </div>
+    </div>
+  </div>
+
+  {% set sections = [
+    ("Agent Persona", "bi-person-badge", "persona", persona),
+    ("Expertise Domains", "bi-book", "expertise", expertise),
+    ("Tone & Communication", "bi-chat-heart", "tone", tone),
+    ("Indian Agriculture Context", "bi-flag", "indian_context", indian_context),
+    ("Safety & Ethical Rules", "bi-shield-check", "safety", safety),
+    ("Response Formatting", "bi-layout-text-window", "response_format", response_format),
+  ] %}
+
+  {% for title, icon, key, content in sections %}
+  <div class="col-lg-6">
+    <div class="card shadow-sm h-100">
+      <div class="card-header fw-semibold d-flex align-items-center gap-2">
+        <i class="bi {{ icon }} text-success"></i>
+        {{ title }}
+        <span class="badge bg-success-subtle text-success ms-auto small">Editable in code</span>
+      </div>
+      <div class="card-body">
+        <pre class="settings-pre">{{ content | trim }}</pre>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+
+  <!-- Edit Guide -->
+  <div class="col-12">
+    <div class="card shadow-sm border-success">
+      <div class="card-header bg-success text-white fw-semibold">
+        <i class="bi bi-pencil-square me-2"></i>How to Customise the Agent
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-4">
+            <h6 class="fw-semibold">1. Open the instructions file</h6>
+            <p class="small text-muted">
+              Edit <code>modules/agent_instructions.py</code> in your project directory.
+              Each section is a clearly labelled Python string constant.
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h6 class="fw-semibold">2. Modify any section</h6>
+            <p class="small text-muted">
+              Change <code>AGENT_PERSONA</code>, <code>TONE_GUIDELINES</code>,
+              <code>SAFETY_RULES</code>, <code>EXPERTISE_DOMAINS</code>, or any other
+              constant. No other files need to be changed.
+            </p>
+          </div>
+          <div class="col-md-4">
+            <h6 class="fw-semibold">3. Restart the server</h6>
+            <p class="small text-muted">
+              Run <code>python app.py</code> (or restart Gunicorn). The new instructions
+              take effect immediately for all new conversations.
+            </p>
+          </div>
+        </div>
+        <hr />
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="fw-semibold text-success">What you can customise</h6>
+            <ul class="small text-muted mb-0">
+              <li>Agent name and persona / backstory</li>
+              <li>Expertise domains and depth of knowledge</li>
+              <li>Communication tone (formal / friendly / regional)</li>
+              <li>Response length and formatting style</li>
+              <li>Regional focus (state-specific advice)</li>
+              <li>Safety rules and restricted topics</li>
+              <li>Multi-farm and family support behaviour</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6 class="fw-semibold text-success">Model settings (in .env)</h6>
+            <ul class="small text-muted mb-0">
+              <li><code>WATSONX_MODEL_ID</code> — switch Granite model variant</li>
+              <li><code>MAX_TOKENS</code> — control response length (default: 1024)</li>
+              <li><code>TEMPERATURE</code> — creativity level (0.0–1.0, default: 0.7)</li>
+              <li><code>WATSONX_URL</code> — region endpoint</li>
+              <li><code>FLASK_DEBUG</code> — development / production mode</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
