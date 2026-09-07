@@ -8,55 +8,68 @@ python-dotenv) so no secrets are hard-coded in source.
 import os
 from dotenv import load_dotenv
 
-# Load .env file at import time so all os.getenv() calls below resolve correctly
-load_dotenv()
+# Always reload .env from disk — override any previously set env vars
+# so stale values from a previous process never persist.
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), ".env"), override=True)
 
 
 class Config:
-    """Base configuration shared by all environments."""
+    """Base configuration — reads directly from os.environ at access time."""
 
     # ------------------------------------------------------------------ #
     #  Flask                                                               #
     # ------------------------------------------------------------------ #
-    SECRET_KEY: str = os.getenv("FLASK_SECRET_KEY", "dev-secret-change-in-prod")
-    DEBUG: bool = os.getenv("FLASK_DEBUG", "false").lower() == "true"
-    HOST: str = os.getenv("FLASK_HOST", "0.0.0.0")
-    PORT: int = int(os.getenv("FLASK_PORT", "5000"))
+    @property
+    def SECRET_KEY(self) -> str:        return os.environ.get("FLASK_SECRET_KEY", "dev-secret-change-in-prod")
+    @property
+    def DEBUG(self) -> bool:            return os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+    @property
+    def HOST(self) -> str:              return os.environ.get("FLASK_HOST", "0.0.0.0")
+    @property
+    def PORT(self) -> int:              return int(os.environ.get("FLASK_PORT", "5000"))
 
     # ------------------------------------------------------------------ #
     #  IBM watsonx.ai                                                      #
     # ------------------------------------------------------------------ #
-    WATSONX_API_KEY: str = os.getenv("WATSONX_API_KEY", "")
-    WATSONX_URL: str = os.getenv("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
-    WATSONX_PROJECT_ID: str = os.getenv("WATSONX_PROJECT_ID", "")
-    WATSONX_MODEL_ID: str = os.getenv("WATSONX_MODEL_ID", "ibm/granite-3-3-8b-instruct")
+    @property
+    def WATSONX_API_KEY(self) -> str:     return os.environ.get("WATSONX_API_KEY", "")
+    @property
+    def WATSONX_URL(self) -> str:         return os.environ.get("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+    @property
+    def WATSONX_PROJECT_ID(self) -> str:  return os.environ.get("WATSONX_PROJECT_ID", "")
+    @property
+    def WATSONX_MODEL_ID(self) -> str:    return os.environ.get("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
 
     # ------------------------------------------------------------------ #
     #  Model inference parameters                                          #
     # ------------------------------------------------------------------ #
-    MAX_TOKENS: int = int(os.getenv("MAX_TOKENS", "1024"))
-    TEMPERATURE: float = float(os.getenv("TEMPERATURE", "0.7"))
+    @property
+    def MAX_TOKENS(self) -> int:        return int(os.environ.get("MAX_TOKENS", "1024"))
+    @property
+    def TEMPERATURE(self) -> float:     return float(os.environ.get("TEMPERATURE", "0.7"))
 
     # ------------------------------------------------------------------ #
     #  Application metadata                                                #
     # ------------------------------------------------------------------ #
-    APP_NAME: str = os.getenv("APP_NAME", "Smart Farming Advice Agent")
-    APP_VERSION: str = os.getenv("APP_VERSION", "1.0.0")
+    @property
+    def APP_NAME(self) -> str:          return os.environ.get("APP_NAME", "Smart Farming Advice Agent")
+    @property
+    def APP_VERSION(self) -> str:       return os.environ.get("APP_VERSION", "1.0.0")
 
 
 class DevelopmentConfig(Config):
-    DEBUG = True
+    pass
 
 
 class ProductionConfig(Config):
-    DEBUG = False
+    pass
 
 
 # Map string names to config objects for easy selection
 config_map = {
     "development": DevelopmentConfig,
-    "production": ProductionConfig,
+    "production":  ProductionConfig,
 }
 
-# Active config — defaults to development if FLASK_ENV is not set
-active_config = config_map.get(os.getenv("FLASK_ENV", "development"), DevelopmentConfig)
+# Active config instance — reads fresh env vars on every property access
+active_config = config_map.get(os.environ.get("FLASK_ENV", "development"), DevelopmentConfig)()

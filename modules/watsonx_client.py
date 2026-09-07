@@ -30,55 +30,69 @@ class WatsonxClient:
     def __init__(self) -> None:
         self._model: ModelInference | None = None
         self._initialised = False
+        self._api_key: str = ""
+        self._project_id: str = ""
 
     # ------------------------------------------------------------------ #
     #  Initialisation                                                      #
     # ------------------------------------------------------------------ #
     def initialise(self) -> None:
         """
-        Lazily connect to the IBM watsonx.ai endpoint and load the model.
-        Called on first use rather than at import time so the app can still
-        start (and show config errors gracefully) if credentials are missing.
+        Connect to IBM watsonx.ai. Always re-reads credentials from the
+        .env file so stale in-memory values never cause auth failures.
+        If already initialised with the same key, reuses the connection.
         """
-        if self._initialised:
+        import os
+        from dotenv import load_dotenv
+        # Force reload .env every time so the latest credentials are used
+        load_dotenv(
+            dotenv_path=os.path.join(os.path.dirname(__file__), '..', '.env'),
+            override=True,
+        )
+
+        api_key    = os.environ.get("WATSONX_API_KEY", "")
+        project_id = os.environ.get("WATSONX_PROJECT_ID", "")
+        url        = os.environ.get("WATSONX_URL", "https://us-south.ml.cloud.ibm.com")
+        model_id   = os.environ.get("WATSONX_MODEL_ID", "ibm/granite-4-h-small")
+
+        # Re-initialise if credentials have changed since last init
+        if self._initialised and self._api_key == api_key and self._project_id == project_id:
             return
 
-        if not active_config.WATSONX_API_KEY:
+        # Reset state before attempting new connection
+        self._initialised = False
+        self._model = None
+
+        if not api_key:
             raise ValueError(
                 "WATSONX_API_KEY is not set. "
-                "Copy .env.example to .env and fill in your IBM Cloud API key."
+                "Add it to your .env file and restart the server."
             )
-        if not active_config.WATSONX_PROJECT_ID:
+        if not project_id:
             raise ValueError(
                 "WATSONX_PROJECT_ID is not set. "
-                "Copy .env.example to .env and fill in your watsonx.ai project ID."
+                "Add it to your .env file and restart the server."
             )
 
-        credentials = Credentials(
-            api_key=active_config.WATSONX_API_KEY,
-            url=active_config.WATSONX_URL,
-        )
+        credentials = Credentials(api_key=api_key, url=url)
 
-        self._model = ModelInference(
-            model_id=active_config.WATSONX_MODEL_ID,
-            credentials=credentials,
-            project_id=active_config.WATSONX_PROJECT_ID,
-            params={
-                GenParams.MAX_NEW_TOKENS: active_config.MAX_TOKENS,
-                GenParams.TEMPERATURE: active_config.TEMPERATURE,
-                GenParams.REPETITION_PENALTY: 1.1,
-            },
-        )
-        # Suppress the deprecation warning for the older text/generation endpoint
-        warnings.filterwarnings(
-            "ignore",
-            category=DeprecationWarning,
-            module="ibm_watsonx_ai",
-        )
-        warnings.filterwarnings("ignore", message=".*deprecated.*", category=Warning)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            self._model = ModelInference(
+                model_id=model_id,
+                credentials=credentials,
+                project_id=project_id,
+                params={
+                    GenParams.MAX_NEW_TOKENS: int(os.environ.get("MAX_TOKENS", "1024")),
+                    GenParams.TEMPERATURE: float(os.environ.get("TEMPERATURE", "0.7")),
+                    GenParams.REPETITION_PENALTY: 1.1,
+                },
+            )
 
+        self._api_key    = api_key
+        self._project_id = project_id
         self._initialised = True
-        logger.info("WatsonxClient initialised with model %s", active_config.WATSONX_MODEL_ID)
+        logger.info("WatsonxClient initialised — model: %s  project: %s", model_id, project_id)
 
     # ------------------------------------------------------------------ #
     #  Text Generation                                                     #
@@ -143,12 +157,13 @@ class WatsonxClient:
     # ------------------------------------------------------------------ #
     def health_check(self) -> dict:
         """Return status dict used by the /api/health endpoint."""
+        import os
         try:
             self.initialise()
             return {
                 "status": "connected",
-                "model": active_config.WATSONX_MODEL_ID,
-                "url": active_config.WATSONX_URL,
+                "model": os.environ.get("WATSONX_MODEL_ID", "ibm/granite-4-h-small"),
+                "url":   os.environ.get("WATSONX_URL", "https://us-south.ml.cloud.ibm.com"),
             }
         except Exception as exc:
             return {"status": "error", "message": str(exc)}
